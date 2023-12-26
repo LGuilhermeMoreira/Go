@@ -14,6 +14,7 @@ func main() {
 	// defer atrasa a execução, executa sempre no fim do programa
 	defer request.Body.Close()
 
+	// response vai ler todo o conteudo do request.Body
 	response, err := io.ReadAll(request.Body)
 	if err != nil {
 		panic(err)
