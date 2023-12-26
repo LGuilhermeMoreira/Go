@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"matematica"
+	//"fundamentos/matematica"
 )
 
 func main() {
-	s := matematica.Soma(10, 20)
-
-	fmt.Printf("valor da soma %v", s)
+	//s := matematica.Soma(1, 2)
+	fmt.Printf("iai comparsa, %s", "valerio")
+	//print(s)
 }
