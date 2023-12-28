@@ -21,16 +21,6 @@ type ViaCEP struct {
 	Siafi       string `json:"siafi"`
 }
 
-func main() {
-	http.HandleFunc("/", BuscaCEPHandler) // criando um end point
-
-	// pode usar clousures
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write([]byte("Ola mundo"))
-	// })
-	http.ListenAndServe(":8000", nil) // abrindo || rodando um http servewr
-}
-
 func BuscaCEPHandler(w http.ResponseWriter, r *http.Request) {
 	// w -> response
 	// r -> request
@@ -96,4 +86,14 @@ func BuscaCEP(cep string) (*ViaCEP, error) {
 	}
 
 	return &C, nil
+}
+
+func main() {
+	http.HandleFunc("/", BuscaCEPHandler) // criando um end point
+
+	// pode usar clousures
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	w.Write([]byte("Ola mundo"))
+	// })
+	http.ListenAndServe(":8000", nil) // abrindo || rodando um http servewr
 }
