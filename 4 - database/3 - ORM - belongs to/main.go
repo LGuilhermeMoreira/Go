@@ -7,12 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-//	type Product struct {
-//		ID    int `gorm: "primaryKey"`
-//		Name  string
-//		Price float64
-//		gorm.Model
-//	}
+//
+
 type Product struct {
 	ID         int `gorm: "primaryKey"`
 	Name       string
@@ -62,9 +58,11 @@ func main() {
 
 	var produtos []Product
 
+	// esse preload traz os dados de category para serem trabalhados
 	db.Preload("Category").Find(&produtos)
 
 	for _, i := range produtos {
 		fmt.Println(i.Name, i.Category.Code)
 	}
+
 }

@@ -18,3 +18,7 @@ services:
     ports:
         #a porta 3306 do meu computador aponta para a porta 3306 do docker
       - "3306:3306"
+
+# para entrar no mysql basca executar:
+# docker-compose exec mysql bash
+# mysql -r root -p goexpert
