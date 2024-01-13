@@ -1,0 +1,20 @@
+- MANTER TAREFAS
+
+- VISUALIZAR TODAS AS TAREFAS 
+
+- TODAS AS TAREFAS FINALIZADAS
+
+- TODAS AS TAREFAS QUE FALTAM FINALIZAR
+
+- TODAS A TAREFAS DE UMA DATA
+
+
+estrutura das tarefas (
+    conteudo
+    data
+    status
+)
+
+struturca listaDeTarefas(
+    [] tarefas
+)
