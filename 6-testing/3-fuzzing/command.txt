@@ -1,0 +1,4 @@
+comandos:
+    go test -fuzz=. => executa todos so fuzz
+
+    go test -fuzz=<nome da func fuzz> => executa a func fuzz    

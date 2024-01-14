@@ -1,0 +1,8 @@
+comandos:
+    go test .  => executa todos os tests
+
+    go test -v  => executa os testes e mostra mais informações
+
+    go test -coverprofile=coverage  => executa os testes e mostra a cobertura deles
+        go tool cover -html=coverage => mostra uma pagina html utilizando o arquivo coverage.out informando falha de cobertura
+    

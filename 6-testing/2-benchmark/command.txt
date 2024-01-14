@@ -1,0 +1,11 @@
+comandos:
+    go test -bench=.  => executa a função de benchmark
+
+    go test -bench=. -run=^#  => executa apenas o benchmark
+
+    go test -bench=<NomeDaSuaFunc> -cpu=8 -benchmem -benchtime=5s -count 5
+        -bench=NomeDaSuaFunc executa benchmarks específicos que correspondem ao nome fornecido.
+        -cpu=8 define o número de CPUs a serem usadas durante o benchmark.
+        -benchmem inclui estatísticas de memória.
+        -benchtime=5s define a duração do benchmark para 5 segundos.
+        -count 5 executa o benchmark 5 vezes para obter uma média.
