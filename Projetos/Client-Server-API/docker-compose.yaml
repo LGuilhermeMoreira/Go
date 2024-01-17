@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+
+    container_name: mysql
+    
+    restart: always
+    
+    platform: linux/amd64
+    
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: goexpert
+      MYSQL_PASSWORD: root
+    
+    ports:
+        #a porta 3306 do meu computador aponta para a porta 3306 do docker
+      - "3306:3306"
+
+# para iniciar o docker-compose basta dar um docker-compose up -d
+
+# para entrar no mysql basca executar:
+# docker-compose exec mysql bash
+# mysql -u root -p goexpert
