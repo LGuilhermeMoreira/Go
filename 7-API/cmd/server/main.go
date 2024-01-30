@@ -1,47 +1,81 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"API/fundamentos/configs"
 	"API/fundamentos/internal/entity"
 	"API/fundamentos/internal/infra/database"
 	"API/fundamentos/internal/infra/webserver/handlers"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
+// @title           Go Expert API Example
+// @version         1.0
+// @description     Product API with auhtentication
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Wesley Willians
+// @contact.url    http://www.fullcycle.com.br
+// @contact.email  atendimento@fullcycle.com.br
+
+// @license.name   Full Cycle License
+// @license.url    http://www.fullcycle.com.br
+
+// @host      localhost:8000
+// @BasePath  /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
-	// Carrega a configuração usando o caminho do arquivo .env
 	configs, err := configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
-
-	db, err := gorm.Open(sqlite.Open(("test.db")), &gorm.Config{}) // para trocar o CGO_ENABLED: go env -w CGO_ENABLED=<0 or1>
-
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-
 	db.AutoMigrate(&entity.Product{}, &entity.User{})
+	productDB := database.NewProduct(db)
+	productHandler := handlers.NewProductHandler(productDB)
 
-	productHandelr := handlers.NewProductHandler(database.NewProduct(db))
-	userHandler := handlers.NewUserHandler(database.NewUser(db), configs.TokenAuth, configs.JWTExpiresIn)
+	userDB := database.NewUser(db)
+	userHandler := handlers.NewUserHandler(userDB)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	// rotas de products
-	r.Post("/products", productHandelr.CreateProduct)
-	r.Get("/products/{id}", productHandelr.GetProduct)
-	r.Put("/products/{id}", productHandelr.UpdateProduct)
-	r.Delete("/products/{id}", productHandelr.DeleteProduct)
-	r.Get("/products/{sort}", productHandelr.GetAllProducts)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.WithValue("jwt", configs.TokenAuth))
+	r.Use(middleware.WithValue("JwtExperesIn", configs.JwtExperesIn))
 
-	r.Post("/users", userHandler.CreateUser)
+	r.Route("/products", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", productHandler.CreateProduct)
+		r.Get("/", productHandler.GetProducts)
+		r.Get("/{id}", productHandler.GetProduct)
+		r.Put("/{id}", productHandler.UpdateProduct)
+		r.Delete("/{id}", productHandler.DeleteProduct)
+	})
+	r.Post("/users", userHandler.Create)
 	r.Post("/users/generate_token", userHandler.GetJWT)
 
+	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
+
 	http.ListenAndServe(":8000", r)
+}
+
+func LogRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
 }

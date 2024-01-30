@@ -1,29 +1,24 @@
 package database
 
 import (
-	"API/fundamentos/internal/entity"
 	"testing"
 
+	"API/fundamentos/internal/entity"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func TestCreateUser(t *testing.T) {
-	// Substitua os valores de DSN abaixo com as informações do seu banco de dados MySQL
-	dsn := "root:root@tcp(localhost:3305)/goexpert?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 	if err != nil {
-		t.Fatalf("Failed to connect to database: %v", err)
+		t.Error(err)
 	}
-
 	db.AutoMigrate(&entity.User{})
+	user, _ := entity.NewUser("John", "j@j.com", "123456")
+	userDB := NewUser(db)
 
-	user, _ := entity.NewUser("gui", "guilhermemoreira@alu.ufc.br", "leite123")
-
-	userDb := NewUser(db)
-
-	err = userDb.Create(user)
+	err = userDB.Create(user)
 	assert.Nil(t, err)
 
 	var userFound entity.User
@@ -35,32 +30,22 @@ func TestCreateUser(t *testing.T) {
 	assert.NotNil(t, userFound.Password)
 }
 
-func TestFindUserByEmail(t *testing.T) {
-	dsn := "root:root@tcp(localhost:3305)/goexpert?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+func TestFindByEmail(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 	if err != nil {
-		t.Fatalf("Failed to connect to database: %v", err)
+		t.Error(err)
 	}
-
 	db.AutoMigrate(&entity.User{})
+	user, _ := entity.NewUser("John", "j@j.com", "123456")
+	userDB := NewUser(db)
 
-	user, _ := entity.NewUser("guilherme", "mail.com", "123444")
-
-	userDb := NewUser(db)
-
-	err = userDb.Create(user)
-
+	err = userDB.Create(user)
 	assert.Nil(t, err)
 
-	userFound, err := userDb.FindByEmail(user.Email)
-
+	userFound, err := userDB.FindByEmail(user.Email)
 	assert.Nil(t, err)
-
 	assert.Equal(t, user.ID, userFound.ID)
-
 	assert.Equal(t, user.Name, userFound.Name)
-
 	assert.Equal(t, user.Email, userFound.Email)
-
 	assert.NotNil(t, userFound.Password)
 }

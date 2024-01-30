@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// conf é uma struct que armazena as configurações do nosso projeto.
 type conf struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
 	DBHost        string `mapstructure:"DB_HOST"`
@@ -14,42 +13,26 @@ type conf struct {
 	DBPassword    string `mapstructure:"DB_PASSWORD"`
 	DBName        string `mapstructure:"DB_NAME"`
 	WebServerPort string `mapstructure:"WEB_SERVER_PORT"`
-	jwtSecret     string `mapstructure:"JWT_SECRET"`
-	JWTExpiresIn  int    `mapstructure:"JWT_EXPIRESIN"`
+	JWTSecret     string `mapstructure:"JWT_SECRET"`
+	JwtExperesIn  int    `mapstructure:"JWT_EXPIRESIN"`
 	TokenAuth     *jwtauth.JWTAuth
 }
 
-// cfg é uma variável global que armazenará as configurações carregadas.
-var cfg *conf
-
-// LoadConfig carrega as configurações a partir de um arquivo .env e retorna uma instância de conf.
 func LoadConfig(path string) (*conf, error) {
-	viper.SetConfigName("app_config") // Define o nome do arquivo de configuração.
-	viper.SetConfigType("env")        // Define o tipo do arquivo de configuração.
-	viper.AddConfigPath(path)         // Adiciona o caminho onde o arquivo de configuração está localizado.
-	viper.SetConfigFile(".env")       // Define o arquivo de configuração específico a ser carregado.
-	viper.AutomaticEnv()              // Permite que as variáveis de ambiente sobrescrevam as configurações.
-
-	err := viper.ReadInConfig() // Lê o arquivo de configuração.
+	var cfg *conf
+	viper.SetConfigName("app_config")
+	viper.SetConfigType("env")
+	viper.AddConfigPath(path)
+	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err) // Encerra o programa se houver um erro ao ler o arquivo de configuração.
+		panic(err)
 	}
-
-	err = viper.Unmarshal(&cfg) // Converte as configurações para a struct conf.
+	err = viper.Unmarshal(&cfg)
 	if err != nil {
-		panic(err) // Encerra o programa se houver um erro ao converter as configurações.
+		panic(err)
 	}
-
-	// Cria uma nova instância de JWTAuth usando a chave secreta do JWT.
-	cfg.TokenAuth = jwtauth.New("HS256", []byte(cfg.jwtSecret), nil)
-
+	cfg.TokenAuth = jwtauth.New("HS256", []byte(cfg.JWTSecret), nil)
 	return cfg, err
 }
-
-/*
-formatos de arquivos que podemos trabalhar:
-yaml
-toml
-env
-json
-*/
