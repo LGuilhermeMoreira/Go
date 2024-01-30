@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"API/fundamentos/configs"
+	_ "API/fundamentos/docs"
 	"API/fundamentos/internal/entity"
 	"API/fundamentos/internal/infra/database"
 	"API/fundamentos/internal/infra/webserver/handlers"
@@ -17,23 +18,22 @@ import (
 	"gorm.io/gorm"
 )
 
-// @title           Go Expert API Example
+// @title           API Fundamentos
 // @version         1.0
-// @description     Product API with auhtentication
+// @description     this is a simple API aimed to studies.
 // @termsOfService  http://swagger.io/terms/
 
-// @contact.name   Wesley Willians
-// @contact.url    http://www.fullcycle.com.br
-// @contact.email  atendimento@fullcycle.com.br
-
-// @license.name   Full Cycle License
-// @license.url    http://www.fullcycle.com.br
+// @contact.name   Guilherme Moreira
+// @contact.url    github.com/LGuilhermeMoreira/
+// @contact.email  Lguilhermemoreiraleite@gmail.com
 
 // @host      localhost:8000
 // @BasePath  /
-// @securityDefinitions.apikey ApiKeyAuth
+
+// @securityDefinitions.apiKey  ApiKeyAuth
 // @in header
 // @name Authorization
+
 func main() {
 	configs, err := configs.LoadConfig(".")
 	if err != nil {

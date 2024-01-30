@@ -1,0 +1,24 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "this is a simple API aimed to studies.",
+        "title": "API Fundamentos",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Guilherme Moreira",
+            "url": "github.com/LGuilhermeMoreira/",
+            "email": "Lguilhermemoreiraleite@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8000",
+    "basePath": "/",
+    "paths": {},
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
