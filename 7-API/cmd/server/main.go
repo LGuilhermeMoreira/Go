@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -69,6 +70,8 @@ func main() {
 	r.Post("/users/generate_token", userHandler.GetJWT)
 
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
+
+	fmt.Println("Server está rodando")
 
 	http.ListenAndServe(":8000", r)
 }
