@@ -36,14 +36,21 @@ import (
 // @name Authorization
 
 func main() {
+	// carregando as cofig no .env
 	configs, err := configs.LoadConfig(".")
+
 	if err != nil {
 		panic(err)
 	}
+
+	// abrindo o banco de dados com ORM de Go
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+
 	if err != nil {
 		panic(err)
 	}
+
+	// Migrando as entidades
 	db.AutoMigrate(&entity.Product{}, &entity.User{})
 	productDB := database.NewProduct(db)
 	productHandler := handlers.NewProductHandler(productDB)
@@ -51,6 +58,7 @@ func main() {
 	userDB := database.NewUser(db)
 	userHandler := handlers.NewUserHandler(userDB)
 
+	// criando as rotas
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -76,6 +84,7 @@ func main() {
 	http.ListenAndServe(":8000", r)
 }
 
+// criando um middleware
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.Method, r.URL.Path)
