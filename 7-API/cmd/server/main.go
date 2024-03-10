@@ -37,6 +37,8 @@ import (
 
 func main() {
 	// carregando as cofig no .env
+	//configs, err := configs.LoadConfig(".")
+
 	configs, err := configs.LoadConfig(".")
 
 	if err != nil {
