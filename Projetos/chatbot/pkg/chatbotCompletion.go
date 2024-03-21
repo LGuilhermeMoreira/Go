@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"bytes"
+	"chatbot/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,10 +14,10 @@ type ChatGPT struct {
 
 	model string
 
-	maxTokens int16
+	maxTokens uint32
 }
 
-func NewChatGPT(key, url, model string, maxTokens int16) *ChatGPT {
+func NewChatGPT(key, url, model string, maxTokens uint32) *ChatGPT {
 	return &ChatGPT{
 		key:       key,
 		url:       url,
@@ -25,60 +26,60 @@ func NewChatGPT(key, url, model string, maxTokens int16) *ChatGPT {
 	}
 }
 
-func (c *ChatGPT) Completion(message string) (string, error) {
+func (c *ChatGPT) Completion(messages []map[string]string) (string, error) {
 
-	// creating the request body
-	requestData := map[string]interface{}{
+	var data models.Messages
+
+	requestBody := map[string]interface{}{
 		"model":      c.model,
 		"max_tokens": c.maxTokens,
-		"messages": []interface{}{map[string]interface{}{
-			"role":    "user",
-			"content": message,
-		}},
+		"messages":   messages,
 	}
 
-	// marshaling the request
-
-	requestBody, err := json.Marshal(requestData)
+	requestMarshalled, err := json.Marshal(requestBody)
 
 	if err != nil {
+		fmt.Printf("error in Completion marshal the requestbody: %v", err)
 		return "", err
 	}
 
-	request, err := http.NewRequest("POST", c.url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("POST", c.url, bytes.NewBuffer(requestMarshalled))
 
 	if err != nil {
+		fmt.Printf("error in Completion create newRequest: %v", err)
 		return "", err
 	}
 
+	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", "Bearer "+c.key)
-	request.Header.Set("Content-type", "application/json")
 
-	client := &http.Client{}
-
-	response, err := client.Do(request)
+	response, err := http.DefaultClient.Do(request)
 
 	if err != nil {
-		return "", err
+		fmt.Printf("error in Completion do http request: %v", err)
+		return "", nil
 	}
 
 	defer response.Body.Close()
 
-	var d map[string]interface{}
-
-	err = json.NewDecoder(response.Body).Decode(&d)
-
-	/*
-		if i chose to user the json.Unmarshal
-		i need to transform the response.body in slice of bytes
-		using io.Readall()
-	*/
+	err = json.NewDecoder(response.Body).Decode(&data)
 
 	if err != nil {
+		fmt.Printf("error in Completion decode the response.body: %v", err)
 		return "", err
 	}
 
-	result := fmt.Sprint(d["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"])
+	fmt.Println(data)
+
+	var result string
+
+	if len(data.Choices) > 0 {
+		result = data.Choices[0].Text
+	} else {
+		result = "Resposta vazia"
+	}
+
+	fmt.Println(result)
 
 	return result, nil
 }

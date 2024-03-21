@@ -47,13 +47,25 @@ func TestCompletion() {
 		panic(err)
 	}
 
-	chat := pkg.NewChatGPT(key, url, "babbage-002", 100)
+	chat := pkg.NewChatGPT(key, url, "gpt-3.5-turbo", 100)
 
-	str, err := chat.Completion("2+2")
+	messages := []map[string]string{
+		{"role": "system",
+			"content": "Voce é um chabot do telegram responda as perguntas todas em caixa alta e começe com uma gargalhada sinistra tipo: AHAHAHAHAHAHHAHAHA"}, {
+			"role":    "user",
+			"content": "2 + 2",
+		}}
+
+	str, err := chat.Completion(messages)
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(str)
+	if str == "" {
+		fmt.Println("string is empty")
+	} else {
+		fmt.Println(str)
+	}
+
 }
