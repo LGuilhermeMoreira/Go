@@ -14,11 +14,6 @@ func main() {
 	var ip string
 
 	// Define a flag named "ip" that represents the IP address.
-	// The flag.StringVar function takes four arguments:
-	// - A pointer to the variable that will store the value of the flag.
-	// - The name of the flag (in this case, "ip").
-	// - The default value for the flag.
-	// - A usage message explaining the purpose of the flag.
 	flag.StringVar(&ip, "ip", "", "IP address to connect to")
 
 	// Parse the command-line flags.
@@ -27,13 +22,12 @@ func main() {
 	// Establish a TCP connection to the specified IP address.
 	conn, err := net.Dial("tcp", ip) // Protocol and IP/IP+PORT/PORT
 	if err != nil {
-		// If an error occurs while establishing the connection, panic with the error message.
 		// "panic" stops the normal execution of the program and prints the error message.
 		panic(err)
 	}
 
 	// Defer the closing of the connection until the function returns.
-	defer conn.Close() // Close connection
+	defer conn.Close()
 
 	// Create a buffer to store data received from the server.
 	buffer := make([]byte, 1024)
@@ -41,10 +35,9 @@ func main() {
 	// Read data from the connection into the buffer.
 	bytesRead, err := conn.Read(buffer)
 	if err != nil {
-		// If an error occurs while reading data from the connection, panic with the error message.
 		panic(err)
 	}
 
 	// Print the remote address (IP and port) of the server and the data received from the server.
-	fmt.Printf("Remote address: %v\nData from server: %v\n", conn.RemoteAddr(), string(buffer[:bytesRead]))
+	fmt.Printf("Remote address: %v\nData from server: %v", conn.RemoteAddr(), string(buffer[:bytesRead]))
 }
