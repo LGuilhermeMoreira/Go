@@ -53,8 +53,3 @@ int main(void)
     }
     return (0);
 }
-
-/* Envie o código do programa cliente criado (para linux) para arthur@ufc.br até o dia 05/Abril com o assunto PRATICA 1. No corpo do e-mail,
-indique o passo-a-passo de como o programa deve ser compilado no Linux. Só corrigirei a prática cujos arquivos anexados estiverem abaixo de 1MB
-e que funcionem no Linux. É necessário que o usuário possa passar (digitar no programa ou passar por linha de comando) o IP do servidor para
-conectar sem precisar recompilar. */
