@@ -12,7 +12,7 @@ services:
     
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: goexpert
+      MYSQL_DATABASE: backProject
       MYSQL_PASSWORD: root
     
     ports:

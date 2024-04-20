@@ -1,23 +1,23 @@
 CREATE TABLE `accounts` (
-  `id` bigserial PRIMARY KEY,
+  `id` bigint AUTO_INCREMENT PRIMARY KEY,
   `owner` varchar(255) NOT NULL,
   `balance` bigint NOT NULL,
   `currency` ENUM ('USD', 'EUR', 'BRL') NOT NULL,
-  `created_at` timestamptz NOT NULL DEFAULT (now())
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `entries` (
-  `id` bigserial PRIMARY KEY,
+  `id` bigint AUTO_INCREMENT PRIMARY KEY,
   `account_id` bigint,
   `amount` bigint NOT NULL COMMENT 'can be negative or positive',
-  `created_at` timestamptz NOT NULL DEFAULT (now())
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `transfers` (
   `from_account_id` bigint,
   `to_account_id` bigint,
   `amount` bigint NOT NULL COMMENT 'must be positive',
-  `created_at` timestamptz NOT NULL DEFAULT (now())
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX `accounts_index_0` ON `accounts` (`owner`);
