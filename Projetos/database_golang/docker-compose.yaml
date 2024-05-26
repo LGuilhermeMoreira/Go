@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: guigui
+      MYSQL_DATABASE: learnDatabase
+      MYSQL_USER: guigui
+    ports:
+      - '5423:3306'
+    restart: always
