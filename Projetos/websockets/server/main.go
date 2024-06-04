@@ -2,17 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"nhooyr.io/websocket"
 )
 
+type Client struct {
+	nickname string
+	ws       *websocket.Conn
+	loged    bool
+}
+
 type Server struct {
-	Clients map[*websocket.Conn]bool
+	clients []Client
 }
 
 func (s *Server) handleSimpleWS(w http.ResponseWriter, r *http.Request) {
+	value := r.URL.Query().Get("nickname")
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
 		// pular a verificação de segurança
 		InsecureSkipVerify: true,
@@ -22,11 +30,21 @@ func (s *Server) handleSimpleWS(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
-	s.Clients[conn] = true
+	client := Client{
+		nickname: value,
+		ws:       conn,
+		loged:    true,
+	}
 
-	for client := range s.Clients {
-		msg := []byte("Novo cliente cadastrado")
-		client.Write(r.Context(), websocket.MessageText, msg)
+	s.clients = append(s.clients, client)
+
+	// informando para todos os clientes que ele entrou
+	for _, i := range s.clients {
+		err = i.ws.Write(r.Context(), websocket.MessageText, []byte(i.nickname+" entrou"))
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
 	}
 
 	// mandando mensagem para todos os clientes conectados
@@ -41,14 +59,11 @@ func (s *Server) handleSimpleWS(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%v %v", r.RemoteAddr, string(data))
 
 		// send messages to all contacts
-		for client := range s.Clients {
-
-			msg := []byte("Mensagem genérica")
-
-			err = client.Write(r.Context(), websocket.MessageText, msg)
-
+		for _, i := range s.clients {
+			msg := []byte("Mensagem generica")
+			err = i.ws.Write(r.Context(), websocket.MessageText, msg)
 			if err != nil {
-				log.Fatalln(err)
+				log.Fatal(err)
 				break
 			}
 		}
@@ -56,7 +71,7 @@ func (s *Server) handleSimpleWS(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLen(w http.ResponseWriter, r *http.Request) {
-	tamanho := len(s.Clients)
+	tamanho := len(s.clients)
 
 	msg := map[string]interface{}{
 		"tamanho": tamanho,
@@ -75,9 +90,7 @@ func (s *Server) handleLen(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewServer() *Server {
-	return &Server{
-		Clients: make(map[*websocket.Conn]bool),
-	}
+	return &Server{}
 }
 
 func main() {
@@ -86,6 +99,6 @@ func main() {
 	http.HandleFunc("/", server.handleSimpleWS)
 
 	http.HandleFunc("/len", server.handleLen)
-
+	fmt.Println("Server on :0")
 	log.Fatal(http.ListenAndServe(":3330", nil))
 }
