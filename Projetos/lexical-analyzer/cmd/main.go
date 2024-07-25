@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"test_lenguage/pkg"
@@ -8,7 +9,14 @@ import (
 
 func main() {
 
-	bytes, err := os.ReadFile("input.Alang")
+	str := flag.String("path", "", "path to file .Alang")
+	flag.Parse()
+
+	if *str == "" {
+		panic("flag path is empty")
+	}
+
+	bytes, err := os.ReadFile(*str)
 
 	if err != nil {
 		panic(err)
@@ -19,7 +27,7 @@ func main() {
 	tokens, err := pkg.Lex(input)
 
 	if err != nil {
-		fmt.Println("ERRO")
+		fmt.Printf("ERRO: %v\n", err)
 	} else {
 		for _, token := range tokens {
 			fmt.Printf("%s (%s)\n", token.Type, token.Lexeme)

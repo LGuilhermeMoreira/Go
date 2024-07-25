@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidade_Lex(t *testing.T) {
+func TestLex(t *testing.T) {
 	response, err := pkg.Lex("int a = 12;")
 	assert.Nil(t, err)
 	assert.NotEmpty(t, response)
 
-	response, err = pkg.Lex(`int a = "12"`)
-	assert.NotNil(t, err)
-	assert.Empty(t, response)
+	response, err = pkg.Lex(`string a = "12"`)
+	assert.Nil(t, err)
+	assert.NotEmpty(t, response)
 
 	response, err = pkg.Lex(`
 		int a = 1;
@@ -22,9 +22,22 @@ func TestValidade_Lex(t *testing.T) {
 		int c = a + b + 13;
 		string A = "abc";
 		string B = "def";
-		string C = A + B; 
+		string C = A + B;
+	`)
+	assert.Nil(t, err)
+	assert.NotEmpty(t, response)
+}
+
+func TestLexWithError(t *testing.T) {
+	response, err := pkg.Lex(`
+		int c = a / b;
 	`)
 	assert.NotNil(t, err)
-	assert.NotEmpty(t, response)
+	assert.Empty(t, response)
 
+	response, err = pkg.Lex(`
+		if (c >= 12) {return 12;}
+	`)
+	assert.NotNil(t, err)
+	assert.Empty(t, response)
 }
