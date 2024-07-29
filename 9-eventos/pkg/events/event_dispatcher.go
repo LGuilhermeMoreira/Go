@@ -47,8 +47,27 @@ func (ed *EventDispatcher) Remove(eventName string, eventHandler EventHandlerInt
 	if !ed.Has(eventName, eventHandler) {
 		return ErrHandlerNotRegistered
 	}
+	handlers := ed.handlers[eventName]
 
-	// remover do slite
+	for i, v := range handlers {
+		if eventHandler == v {
+			handlers = append(handlers[:i], handlers[i+1:]...)
+			break
+		}
+	}
+	ed.handlers[eventName] = handlers
+	return nil
+}
 
+func (ed *EventDispatcher) Clear() {
+	ed.handlers = make(map[string][]EventHandlerInterface)
+}
+
+func (ed *EventDispatcher) Dispatch(event EventInterface) error {
+	if handlers, ok := ed.handlers[event.GetName()]; ok {
+		for _, v := range handlers {
+			v.Handle(event)
+		}
+	}
 	return nil
 }
