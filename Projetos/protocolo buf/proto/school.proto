@@ -1,7 +1,6 @@
 syntax="proto3";
-package school;
+package pb;
 option go_package="/school";
-// option go_package="school"; não funciona
 
 message Student{
     string name =1;
@@ -19,6 +18,7 @@ message Professor{
 message Class{
     repeated Student people=1;
     Professor professor=2;
+    string code=3;
 }
 
 // message ClassService{

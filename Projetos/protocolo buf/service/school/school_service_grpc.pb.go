@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: message_service.proto
+// source: school_service.proto
 
 package school
 
@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ClassService_ListAllStudents_FullMethodName = "/school.ClassService/ListAllStudents"
+	ClassService_ListAllStudents_FullMethodName = "/pb.ClassService/ListAllStudents"
 )
 
 // ClassServiceClient is the client API for ClassService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClassServiceClient interface {
-	ListAllStudents(ctx context.Context, in *Class, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Student], error)
+	ListAllStudents(ctx context.Context, in *InputListAllStudents, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Student], error)
 }
 
 type classServiceClient struct {
@@ -37,13 +37,13 @@ func NewClassServiceClient(cc grpc.ClientConnInterface) ClassServiceClient {
 	return &classServiceClient{cc}
 }
 
-func (c *classServiceClient) ListAllStudents(ctx context.Context, in *Class, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Student], error) {
+func (c *classServiceClient) ListAllStudents(ctx context.Context, in *InputListAllStudents, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Student], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &ClassService_ServiceDesc.Streams[0], ClassService_ListAllStudents_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[Class, Student]{ClientStream: stream}
+	x := &grpc.GenericClientStream[InputListAllStudents, Student]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ type ClassService_ListAllStudentsClient = grpc.ServerStreamingClient[Student]
 // All implementations must embed UnimplementedClassServiceServer
 // for forward compatibility.
 type ClassServiceServer interface {
-	ListAllStudents(*Class, grpc.ServerStreamingServer[Student]) error
+	ListAllStudents(*InputListAllStudents, grpc.ServerStreamingServer[Student]) error
 	mustEmbedUnimplementedClassServiceServer()
 }
 
@@ -71,7 +71,7 @@ type ClassServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedClassServiceServer struct{}
 
-func (UnimplementedClassServiceServer) ListAllStudents(*Class, grpc.ServerStreamingServer[Student]) error {
+func (UnimplementedClassServiceServer) ListAllStudents(*InputListAllStudents, grpc.ServerStreamingServer[Student]) error {
 	return status.Errorf(codes.Unimplemented, "method ListAllStudents not implemented")
 }
 func (UnimplementedClassServiceServer) mustEmbedUnimplementedClassServiceServer() {}
@@ -96,11 +96,11 @@ func RegisterClassServiceServer(s grpc.ServiceRegistrar, srv ClassServiceServer)
 }
 
 func _ClassService_ListAllStudents_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Class)
+	m := new(InputListAllStudents)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ClassServiceServer).ListAllStudents(m, &grpc.GenericServerStream[Class, Student]{ServerStream: stream})
+	return srv.(ClassServiceServer).ListAllStudents(m, &grpc.GenericServerStream[InputListAllStudents, Student]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
@@ -110,7 +110,7 @@ type ClassService_ListAllStudentsServer = grpc.ServerStreamingServer[Student]
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ClassService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "school.ClassService",
+	ServiceName: "pb.ClassService",
 	HandlerType: (*ClassServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -120,5 +120,5 @@ var ClassService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "message_service.proto",
+	Metadata: "school_service.proto",
 }
