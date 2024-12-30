@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"protocolobuf/service/school"
 
-	proto "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func main() {
@@ -20,16 +21,18 @@ func main() {
 		}
 		fmt.Println(conn.LocalAddr().String())
 		go func() {
-			buffer := make([]byte, 1024)
-			_, err := conn.Read(buffer)
+			professor := school.Professor{
+				Name:       "Thigas",
+				Discipline: "POO",
+				Code:       "QXD004521",
+				Age:        51,
+			}
+			data, err := proto.Marshal(&professor)
 			if err != nil {
+				log.Println(err)
 				conn.Close()
 			}
-			var message school.Professor
-			if err := proto.Unmarshal(buffer, &message); err != nil {
-				conn.Close()
-			}
-			fmt.Println(&message)
+			conn.Write(data)
 		}()
 	}
 }
