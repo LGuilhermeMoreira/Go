@@ -1,0 +1,12 @@
+syntax = "proto3";
+package pb;
+option go_package="/school";
+import "school.proto";
+
+message InputListAllStudents{
+    string code =1;
+}
+
+service ClassService{
+    rpc ListAllStudents(InputListAllStudents) returns (stream Student);
+}

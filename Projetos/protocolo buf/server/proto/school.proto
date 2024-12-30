@@ -1,0 +1,27 @@
+syntax="proto3";
+package pb;
+option go_package="/school";
+
+message Student{
+    string name =1;
+    int32 age=2;
+    string code=3;
+}
+
+message Professor{
+    string name =1;
+    int32 age=2;
+    string code=3;
+    string discipline=4;
+}
+
+message Class{
+    repeated Student people=1;
+    Professor professor=2;
+    string code=3;
+}
+
+// message ClassService{
+//     rpc ListAllStudents
+// }
+

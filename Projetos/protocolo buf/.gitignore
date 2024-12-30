@@ -1,0 +1,5 @@
+client/bin
+client/include
+client/lib
+client/lib64
+client/pyvenv.cfg
