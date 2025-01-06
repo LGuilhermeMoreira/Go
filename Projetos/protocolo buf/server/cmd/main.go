@@ -4,35 +4,38 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"protocolobuf/service/school"
 
-	"google.golang.org/protobuf/proto"
+	pb "protocolobuf/service/school"
+
+	"google.golang.org/grpc"
 )
 
-func main() {
-	list, err := net.Listen("tcp", ":4000")
-	if err != nil {
-		panic(err)
+type classServer struct {
+	pb.UnimplementedClassServiceServer
+}
+
+func (s *classServer) ListAllStudents(req *pb.InputListAllStudents, stream pb.ClassService_ListAllStudentsServer) error {
+	students := []*pb.Student{
+		{Name: "Alice", Age: 20, Code: "S123"},
+		{Name: "Bob", Age: 21, Code: "S456"},
 	}
-	for {
-		conn, err := list.Accept()
-		if err != nil {
-			panic(err)
+	for _, student := range students {
+		if err := stream.Send(student); err != nil {
+			return err
 		}
-		fmt.Println(conn.LocalAddr().String())
-		go func() {
-			professor := school.Professor{
-				Name:       "Thigas",
-				Discipline: "POO",
-				Code:       "QXD004521",
-				Age:        51,
-			}
-			data, err := proto.Marshal(&professor)
-			if err != nil {
-				log.Println(err)
-				conn.Close()
-			}
-			conn.Write(data)
-		}()
+	}
+	return nil
+}
+
+func main() {
+	lis, err := net.Listen("tcp", ":4000")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterClassServiceServer(grpcServer, &classServer{})
+	fmt.Println("Servidor gRPC ouvindo na porta 4000")
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }

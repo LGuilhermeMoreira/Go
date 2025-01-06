@@ -1,11 +1,15 @@
-#python -m grpc_tools.protoc -I=./proto/ --python_out=. --grpc_python_out=. proto/*.proto
-import school_pb2
-import socket
+import grpc
+import school_service_pb2
+import school_service_pb2_grpc
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('localhost', 4000))
-data = client.recv(1024)
-professor = school_pb2.Professor()
-professor.ParseFromString(data)
-print(f"Recebido: {professor}")  # Isso deve 
-client.close()
+def run():
+    channel = grpc.insecure_channel('localhost:4000')
+    stub = school_service_pb2_grpc.ClassServiceStub(channel)
+
+    input = school_service_pb2.InputListAllStudents(code="XYZ123")
+    students = stub.ListAllStudents(input)
+    for student in students:
+        print(f"Received: {student}")
+
+if __name__ == '__main__':
+    run()
